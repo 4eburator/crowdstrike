@@ -23,13 +23,13 @@
 
 **Endpoints:**
 
-**Service endpoint**
-http://127.0.0.1:5000
+*Service endpoint:* http://127.0.0.1:5000
 
-**API documentation**
-http://127.0.0.1:5000/docs
+*API documentation:* http://127.0.0.1:5000/docs
 
 
 **Start in Docker:**
 - `docker build -t crowdstrike_service .`
 - `docker run -d --name crowdstrike -p 80:5000 crowdstrike_service`
+
+*Service endpoint (from docker):* http://127.0.0.1:80
