@@ -3,6 +3,7 @@
 **Prerequisite**
 
 - pyenv is installed; see https://github.com/pyenv/pyenv#readme;
+- nmap is installed
 
 
 **Local environment setup commands (MacOS)**
@@ -29,6 +30,13 @@
 
 
 **Start in Docker:**
+
+The following Web-Service default settings are defined in app/api/config/crowdstrike_config.py:
+- nmap_cli
+- storage_connect
+However they can be overridden in Dockerfile via environment variable (see example) 
+
+The commands to build a Docker image and launch a container 
 - `docker build -t crowdstrike_service .`
 - `docker run -d --name crowdstrike -p 80:5000 crowdstrike_service`
 
@@ -48,3 +56,9 @@ value:
  - timestamp
  - result_code
  - scan_result
+
+
+TODO (further development):
+- authentication oauth
+- new storage type support
+- testing
