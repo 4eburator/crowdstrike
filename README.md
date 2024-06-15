@@ -5,7 +5,7 @@
 - pyenv is installed; see https://github.com/pyenv/pyenv#readme;
 
 
-**Environment setup commands (MacOS)**
+**Local environment setup commands (MacOS)**
 
 - `SDK_PYTHON_VERSION=3.9.10`
 - `ENV_NAME=crowdstrike`
@@ -15,7 +15,21 @@
 - `pip install --upgrade pip`
 - `pip install -r requirements.txt`
 
-**Start Web-app:
-*** from command-line:
+**Start Web-app:**
+
+***locally from command-line:***
+
 `uvicorn api.v1.nmap_api:app --reload`
 
+**Endpoints:**
+
+**Service endpoint**
+http://127.0.0.1:5000
+
+**API documentation**
+http://127.0.0.1:5000/docs
+
+
+**Start in Docker:**
+- `docker build -t crowdstrike_service .`
+- `docker run -d --name crowdstrike -p 80:5000 crowdstrike_service`
