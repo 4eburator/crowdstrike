@@ -46,6 +46,8 @@ The commands to build a Docker image and launch a container
 - hostnames and ip addresses are not normalized and are considered as independent entities;
 It can be improved by converting the hostnames into ip addresses just after 'nmap' tool call and before
 saving the scan result into storage
+- support of new type of storage (document-oriented database) can be added and database service can be
+launched from docker-compose together with web-service
 
 CONFIG:
 - nmap: /usr/local/bin/nmap

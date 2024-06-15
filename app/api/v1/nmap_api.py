@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 
 from app.api.config.crowdstrike_config import Config
 from app.storage.storage_repo import StorageRepo
@@ -9,6 +9,7 @@ storage = StorageRepo.get_storage(settings)
 
 # def read_config():
 #     return storage_repo
+
 
 @app.get('/')
 async def root():
