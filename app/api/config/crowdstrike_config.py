@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     nmap_cli: str = 'nmap -oX'
-    storage_connect: str = 'lightdb://./storage'
+    storage_connect: str = 'tinydb://./storage'
 
 
 class Config:

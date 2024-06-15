@@ -1,5 +1,13 @@
 # crowdstrike take-home assignment
 
+The test assignments is implemented in python 3.9+ as web service by means of the following frameworks
+and dependencies:
+- FastAPI framework
+- uvicorn application server
+- TinyDB json database
+
+and can be run locally and from docker container.
+
 **Prerequisite**
 
 - pyenv is installed; see https://github.com/pyenv/pyenv#readme;
@@ -58,7 +66,7 @@ CONFIG:
 STORAGE:
 key:  hostname / ip
 value:
- - scan_version
+ - scan_id
  - timestamp
  - result_code
  - scan_result
