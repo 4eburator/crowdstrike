@@ -7,11 +7,14 @@
 
 **Environment setup commands (MacOS)**
 
-- SDK_PYTHON_VERSION=3.9.10
-- ENV_NAME=crowdstrike
-- pyenv install -v $SDK_PYTHON_VERSION
-- pyenv virtualenv $SDK_PYTHON_VERSION $ENV_NAME 
-- pyenv local $ENV_NAME
-- pip install --upgrade pip
-- pip install -r requirements.txt
+- `SDK_PYTHON_VERSION=3.9.10`
+- `ENV_NAME=crowdstrike`
+- `pyenv install -v $SDK_PYTHON_VERSION`
+- `pyenv virtualenv $SDK_PYTHON_VERSION $ENV_NAME` 
+- `pyenv local $ENV_NAME`
+- `pip install --upgrade pip`
+- `pip install -r requirements.txt`
+
+**Start Web-app:
+`uvicorn api.v1.nmap_api:app --reload`
 
