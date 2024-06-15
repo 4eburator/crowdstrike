@@ -33,3 +33,18 @@
 - `docker run -d --name crowdstrike -p 80:5000 crowdstrike_service`
 
 *Service endpoint (from docker):* http://127.0.0.1:80
+
+
+CONFIG:
+- nmap: /usr/local/bin/nmap
+- logging
+- history: storage_connection: file://~/crowdstrike/history
+- clean
+
+STORAGE:
+key:  hostname / ip
+value:
+ - scan_version
+ - timestamp
+ - result_code
+ - scan_result
