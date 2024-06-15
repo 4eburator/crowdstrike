@@ -1,18 +1,18 @@
 from fastapi import FastAPI, Depends
 
 from app.api.config.crowdstrike_config import Config
-from app.storage.storage import StorageRepo
+from app.storage.storage_repo import StorageRepo
 
 settings = Config.get_settings()
 app = FastAPI()
-storage_repo = StorageRepo(settings)
+storage = StorageRepo.get_storage(settings)
 
-def read_config():
-    return storage_repo
+# def read_config():
+#     return storage_repo
 
 @app.get('/')
-async def root(config: StorageRepo = Depends(read_config)):
-    return {"message": f'Hello {config.get_name()} World'}
+async def root():
+    return {"message": f'Hello {storage.get_name()} World'}
 
 
 @app.get('/bye')

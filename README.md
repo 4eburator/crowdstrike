@@ -42,6 +42,10 @@ The commands to build a Docker image and launch a container
 
 *Service endpoint (from docker):* http://127.0.0.1:80
 
+**POTENTIAL PROBLEMS AND IMPROVEMENTS**
+- hostnames and ip addresses are not normalized and are considered as independent entities;
+It can be improved by converting the hostnames into ip addresses just after 'nmap' tool call and before
+saving the scan result into storage
 
 CONFIG:
 - nmap: /usr/local/bin/nmap
