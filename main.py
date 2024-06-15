@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import Tuple
+
+import uvicorn
 from pydantic import BaseModel, ValidationError, PositiveInt
 
 
@@ -38,3 +40,5 @@ if __name__ == '__main__':
         print(f'USER: {user.name}')
     except ValidationError as e:
         print(f'PROBLEM: {e.errors()}')
+
+    uvicorn.run('api.v1.nmap_api:app', port=5000, log_level='info')

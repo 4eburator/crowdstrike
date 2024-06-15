@@ -16,5 +16,6 @@
 - `pip install -r requirements.txt`
 
 **Start Web-app:
+*** from command-line:
 `uvicorn api.v1.nmap_api:app --reload`
 
