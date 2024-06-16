@@ -5,12 +5,12 @@ from urllib.parse import ParseResult
 
 from tinydb import TinyDB
 
-from app.api.v1.models import TriggerResult
+from app.api.v1.models import ScanSession, ScanResult
 
 
 class Storage(metaclass=ABCMeta):
     @abstractmethod
-    def add_scan_result(self):
+    def add_scan_result(self, scan_session: ScanSession, result: ScanResult):
         pass
 
     @abstractmethod
@@ -30,12 +30,13 @@ class TinyDBStorage(Storage):
         db_path = os.path.join(self.storage_path, f'{host}.json')
         return TinyDB(db_path)
 
-    def add_scan_result(self, scan_trigger: TriggerResult):
-        doc = {'scan_uuid': str(scan_trigger.uuid),
-               'ts': datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S'),
-               'result_code': 'SUCCESS',
-               'scan_result': {'hello': scan_trigger.host}}
-        self._open_db(scan_trigger.host).insert(doc)
+    def add_scan_result(self, scan_session: ScanSession, result: ScanResult):
+        # doc = {'scan_uuid': str(scan_session.uuid),
+        #        'ts': datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S'),
+        #        'result_code': 'SUCCESS',
+        #        'scan_result': {'hello': scan_session.host}}
+
+        self._open_db(scan_session.host).insert(result.model_dump())
 
     def get_last_version(self, host: str) -> int:
         docs = self._open_db(host).all()
