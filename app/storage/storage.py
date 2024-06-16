@@ -5,6 +5,8 @@ from urllib.parse import ParseResult
 
 from tinydb import TinyDB
 
+from app.api.v1.models import TriggerResult
+
 
 class Storage(metaclass=ABCMeta):
     @abstractmethod
@@ -28,13 +30,12 @@ class TinyDBStorage(Storage):
         db_path = os.path.join(self.storage_path, f'{host}.json')
         return TinyDB(db_path)
 
-    def add_scan_result(self, host: str):
-        doc = {'scan_id': 1,
+    def add_scan_result(self, scan_trigger: TriggerResult):
+        doc = {'scan_uuid': str(scan_trigger.uuid),
                'ts': datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S'),
                'result_code': 'SUCCESS',
-               'scan_result': {'hello': host}}
-        self._open_db(host).insert(doc)
-        return host
+               'scan_result': {'hello': scan_trigger.host}}
+        self._open_db(scan_trigger.host).insert(doc)
 
     def get_last_version(self, host: str) -> int:
         docs = self._open_db(host).all()
