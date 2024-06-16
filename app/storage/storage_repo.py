@@ -2,7 +2,7 @@ from urllib.parse import urlparse
 
 from fastapi import HTTPException
 
-from app.api.config.crowdstrike_config import Settings
+from app.config.crowdstrike_config import Settings
 from app.storage.storage import Storage, TinyDBStorage
 
 

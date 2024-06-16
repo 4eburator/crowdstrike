@@ -1,10 +1,9 @@
-from datetime import datetime
 import time
 from typing import Annotated
 
 from fastapi import FastAPI, Path, BackgroundTasks
 
-from app.api.config.crowdstrike_config import Config
+from app.config.crowdstrike_config import Config
 from app.api.v1.models import TriggerResult
 from app.storage.storage_repo import StorageRepo
 
