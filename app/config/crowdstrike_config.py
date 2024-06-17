@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    nmap_cli: str = 'nmap -oX'
+    nmap_cli: str = 'nmap -p- -oX - '
     storage_connect: str = 'tinydb://./storage'
 
 
