@@ -3,4 +3,4 @@ pydantic-settings
 fastapi
 uvicorn[standard]
 tinydb
-
+xmltodict

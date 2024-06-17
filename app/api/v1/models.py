@@ -12,13 +12,13 @@ class UUIDModel(BaseModel):
         return str(uuid1)
 
 class ScanResult(BaseModel):
-    result: str
+    nmap_output: str
 
 class ScanSession(UUIDModel):
     host: str
     trigger_ts: datetime = Field(default_factory=datetime.now)
     result_code: str = 'N/A'
-    result: Optional[ScanResult] = ScanResult(result='')
+    result: Optional[ScanResult] = ScanResult(nmap_output='')
 
     @field_serializer('trigger_ts')
     def ts_to_str(self, ts: datetime, _info) -> str:
