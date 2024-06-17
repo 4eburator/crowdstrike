@@ -3,7 +3,7 @@ import os.path
 from abc import ABCMeta, abstractmethod
 from urllib.parse import ParseResult
 
-from tinydb import TinyDB
+from tinydb import TinyDB, Query
 
 from app.api.v1.models import ScanSession, ScanResult
 
@@ -14,7 +14,7 @@ class Storage(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_last_version(self) -> int:
+    def find_result(self, host: str, scan_id) -> ScanSession:
         pass
 
 
@@ -38,6 +38,7 @@ class TinyDBStorage(Storage):
 
         self._open_db(scan_session.host).insert(result.model_dump())
 
-    def get_last_version(self, host: str) -> int:
-        docs = self._open_db(host).all()
-        return len(docs)
+    def find_result(self, host: str, scan_id: str) -> ScanSession:
+        query = Query()
+        results = self._open_db(host).search(query.uuid == scan_id)
+        return None if len(results) != 1 else results[0]

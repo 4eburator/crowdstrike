@@ -22,3 +22,6 @@ class ControlManager:
         scan_session.result = scan_result
         self.storage.add_scan_result(scan_session, scan_session)
         print(f'Finish scan of {scan_session.host}')
+
+    def get_scan_result(self, host: str, scan_id: str) -> ScanSession:
+        return self.storage.find_result(host, scan_id)
