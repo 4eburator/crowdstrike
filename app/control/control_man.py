@@ -18,7 +18,8 @@ class ControlManager:
     def _start_scan(self, scan_session: ScanSession):
         print(f'Start scan of {scan_session.host}')
         time.sleep(5)
-        scan_result = ScanResult(result_code='SUCCESS', result='all ports are open')
+        scan_result = ScanResult(result='all ports are open')
+        scan_session.result_code = 'SUCCESS'
         scan_session.result = scan_result
         self.storage.add_scan_result(scan_session, scan_session)
         print(f'Finish scan of {scan_session.host}')
