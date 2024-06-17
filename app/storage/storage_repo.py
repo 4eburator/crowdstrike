@@ -15,12 +15,3 @@ class StorageRepo:
         else:
             raise HTTPException(status_code=500,
                                 detail=f'Storage type {storage_connect_string.scheme} is not supported')
-
-    # def __init__(self, settings: Settings):
-    #     super().__init__()
-    #     self.settings = settings
-    #     print('Create Storage Repo')
-    #
-    # def get_name(self) -> str:
-    #     storage_url = urlparse(self.settings.storage_connect)
-    #     return storage_url.scheme
