@@ -91,17 +91,49 @@ The commands to build a Docker image and launch a container
 
 
 **TEST STRATEGY**
+
 These tests below I'd like to add in real-life scenario:
+
+- configuration tests check if:
+  - storage is being initialized correctly (i.e. local folders are successfully created if necessary or open if 
+  they exist)
+  - respective error message is printed out if configuration (path) is wrong
+  - the service is launched on the specified port
+  - API documentation is accessible 
+
+
 - functional tests
+  - trigger a known host scan and check if an appropriate record is added into a correct json
+  file with a unique UUID 
+  - trigger a sequence of identical host scans in parallel and check if all of them are processed
+  correctly and consistently
+  - retrieve a scan result for the known host and compare it with a model expected
+  - trigger a wrong host scan and check if scan result status is "FAIL"
+  - carry out a sequence of multiple target host scans and request difference between the latest ones
+  - trigger a host scan; open/close a port on the host; trigger a host scan again and retrieve the difference
+  - check if the service is able to handle 'nmap' output properly in case of wrong cli parameters or output format 
+    (not XML) 
+
+
 - performance/scalability tests
+  - check if the service response is immediate and does not depend on background tasks
+  - measure the latency dependency when the request rate is constantly increasing 
+  - in multi-container environment - check storage health
+  - in case of dynamic load - test how auto-balancing distributes the load between service endpoints
+
+
+- load / durability / endurance testing
+  - check if the service is able to consistently handle the requests for a significantly long time
+  
 - security tests
+  - authentication check - only authorized users / service accounts are able to use the method(s)
 
 
 **POTENTIAL PROBLEMS AND IMPROVEMENTS**
 - hostnames and ip addresses are not normalized and are considered as independent entities;
 It can be improved by converting the hostnames into ip addresses just after 'nmap' tool call and before
 saving the scan result into storage
-- 
+
 - support of new type of storage (document-oriented database) can be added and database service can be
 launched from docker-compose together with web-service
 - storage clean-up process should be added in order to remote outdated scan results
