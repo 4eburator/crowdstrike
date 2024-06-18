@@ -1,5 +1,6 @@
 from datetime import datetime
 import uuid as uuid_pkg
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field, field_serializer
@@ -14,10 +15,15 @@ class UUIDModel(BaseModel):
 class ScanResult(BaseModel):
     nmap_output: str
 
+class ResultCode(str, Enum):
+    ok = 'OK'
+    success = 'SUCCESS'
+    fail = 'FAIL'
+
 class ScanSession(UUIDModel):
     host: str
     trigger_ts: datetime = Field(default_factory=datetime.now)
-    result_code: str = 'N/A'
+    result_code: ResultCode = ResultCode.ok
     result: Optional[ScanResult] = ScanResult(nmap_output='')
 
     @field_serializer('trigger_ts')

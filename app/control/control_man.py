@@ -4,7 +4,7 @@ import time
 import xmltodict
 from fastapi import BackgroundTasks
 
-from app.api.v1.models import ScanSession, ScanResult
+from app.api.v1.models import ScanSession, ScanResult, UUIDModel, ResultCode
 from app.config.crowdstrike_config import Settings
 from app.storage.storage_repo import StorageRepo
 
@@ -27,7 +27,7 @@ class ControlManager:
         hosts_scanner = int(nmap_json_output['nmaprun']['runstats']['hosts']['@up'])
 
         scan_result = ScanResult(nmap_output=nmap_str_output)
-        scan_session.result_code = 'SUCCESS' if hosts_scanner == 1 else 'FAILED'
+        scan_session.result_code = ResultCode.success if hosts_scanner == 1 else ResultCode.fail
         scan_session.result = scan_result
 
         self.storage.add_scan_result(scan_session, scan_session)
@@ -46,3 +46,18 @@ class ControlManager:
 
     def get_scan_result(self, host: str, scan_id: str) -> ScanSession:
         return self.storage.find_result(host, scan_id)
+
+    def get_success_scan_results_meta(self, host: str) -> list[UUIDModel]:
+        return self.storage.get_all_scan_ids(host, ResultCode.success)
+
+    def get_diff_result(self, host: str, latest_uuid: UUIDModel, prev_uuid: UUIDModel):
+        # latest_result = self.get_scan_result(host, str(latest_uuid.uuid))
+        # latest_ports = self._extract_ports_info(json.loads(latest_result.result.nmap_output))
+        # prev_result = self.get_scan_result(host, str(prev_uuid.uuid))
+        latest_ports = self._extract_ports_info(host, latest_uuid)
+        prev_ports = self._extract_ports_info(host, prev_uuid)
+        return None
+
+    def _extract_ports_info(self, host: str, uuid: UUIDModel):
+        scan_result = self.get_scan_result(host, str(uuid.uuid))
+        return json.loads(scan_result.result.nmap_output)['nmaprun']['host']['ports']['port']

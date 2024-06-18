@@ -5,7 +5,7 @@ from urllib.parse import ParseResult
 
 from tinydb import TinyDB, Query
 
-from app.api.v1.models import ScanSession, ScanResult
+from app.api.v1.models import ScanSession, ScanResult, UUIDModel, ResultCode
 
 
 class Storage(metaclass=ABCMeta):
@@ -15,6 +15,10 @@ class Storage(metaclass=ABCMeta):
 
     @abstractmethod
     def find_result(self, host: str, scan_id) -> ScanSession:
+        pass
+
+    @abstractmethod
+    def get_all_scan_ids(self, host: str, result_status: ResultCode) -> list[UUIDModel]:
         pass
 
 
@@ -31,14 +35,14 @@ class TinyDBStorage(Storage):
         return TinyDB(db_path)
 
     def add_scan_result(self, scan_session: ScanSession, result: ScanResult):
-        # doc = {'scan_uuid': str(scan_session.uuid),
-        #        'ts': datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S'),
-        #        'result_code': 'SUCCESS',
-        #        'scan_result': {'hello': scan_session.host}}
-
         self._open_db(scan_session.host).insert(result.model_dump())
 
     def find_result(self, host: str, scan_id: str) -> ScanSession:
         query = Query()
         results = self._open_db(host).search(query.uuid == scan_id)
-        return None if len(results) != 1 else results[0]
+        return None if len(results) != 1 else ScanSession(**results[0])
+
+    def get_all_scan_ids(self, host: str, result_status: ResultCode) -> list[UUIDModel]:
+        rows = self._open_db(host).all()
+        return [UUIDModel(**row) for row in rows
+                if 'uuid' in row and result_status == row.get('result_code')]
