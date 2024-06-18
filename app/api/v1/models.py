@@ -29,3 +29,6 @@ class ScanSession(UUIDModel):
     @field_serializer('trigger_ts')
     def ts_to_str(self, ts: datetime, _info) -> str:
         return str(ts)
+
+class DiffResult(BaseModel):
+    change: list[dict]

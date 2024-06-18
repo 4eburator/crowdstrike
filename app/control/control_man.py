@@ -3,7 +3,7 @@ import subprocess
 import xmltodict
 from fastapi import BackgroundTasks
 
-from app.api.v1.models import ScanSession, ScanResult, UUIDModel, ResultCode
+from app.api.v1.models import ScanSession, ScanResult, UUIDModel, ResultCode, DiffResult
 from app.config.crowdstrike_config import Settings
 from app.storage.storage_repo import StorageRepo
 
@@ -51,14 +51,14 @@ class ControlManager:
     def get_success_scan_results_meta(self, host: str) -> list[UUIDModel]:
         return self.storage.get_all_scan_ids(host, ResultCode.success)
 
-    def get_diff_result(self, host: str, latest_uuid: UUIDModel, prev_uuid: UUIDModel) -> list[dict]:
+    def get_diff_result(self, host: str, latest_uuid: UUIDModel, prev_uuid: UUIDModel) -> DiffResult:
         latest_ports = self._extract_ports_info(host, latest_uuid)
         prev_ports = self._extract_ports_info(host, prev_uuid)
         diff_ports = list()
         for port in latest_ports:
             if port not in prev_ports:
                 diff_ports.append(port)
-        return diff_ports
+        return DiffResult(change=diff_ports)
 
     def _extract_ports_info(self, host: str, uuid: UUIDModel):
         scan_result = self.get_scan_result(host, str(uuid.uuid))
