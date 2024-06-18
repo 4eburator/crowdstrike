@@ -1,14 +1,53 @@
 # crowdstrike take-home assignment
 
+https://github.com/4eburator/crowdstrike
+
 The test assignments is implemented in python 3.9+ as web service by means of the following frameworks
 and dependencies:
 - FastAPI framework
 - uvicorn application server
 - TinyDB json database
 
-and can be run locally and from docker container.
+and can be run locally and from Docker container.
 
-**Prerequisite**
+**API**
+
+REST API consists of the following methods:
+
+* `POST /scan/<HOST>`
+This asynchronous call generates a unique `SCAN_ID`, launchers a background scan of the target host by means of 'nmap' 
+tool, and immediately returns `SCAN_ID` (see `ScanSession` model). The background task captures 'nmap' output in XML, 
+processes it (coverts to json) and stores in document-based Database TinyDB (json file stored locally per target host).
+
+
+* `GET /scan/<HOST>/<SCAN_ID>`
+The call extracts the scan result of the target host with the requested `SCAN_ID` from the storage and returns it. 
+
+
+* `GET /diff/<HOST>`
+The call retrieves two latest successful scan results of the target host from the storage (if they are available),
+compares the port states and returns the difference (if any).
+
+
+**CONFIGURATION**
+
+- Default application settings are defined in `app/config/crowdstrike_config.py` as `pydantic_settings` and can be 
+overridden (see example in `Dockerfile`). 
+- `nmap_cli` defines the location and command-line parameters of `nmap` tool
+- `storage_connect` defines a connection string for a storage (TinyDB - refers to a local path of json files)
+- service port is specified in `main.py` (when started locally)
+- internal port is explicitly set in `Dockerfile` 
+
+
+**STORAGE**
+
+In order to keep implementation easy to implement but open to extend/replace, document-oriented TinyDB
+(https://tinydb.readthedocs.io/en/latest/index.html) was chosen (document versions are stored in json files locally).
+TinyDB is not thread-safe and obviously cannot be easily replicated and used in distributed setup but still can be 
+replaced with any other document-oriented database like MongoDB or Couchbase.
+
+
+**PREREQUISITES**
 
 - pyenv is installed; see https://github.com/pyenv/pyenv#readme;
 - nmap is installed
@@ -50,29 +89,19 @@ The commands to build a Docker image and launch a container
 
 *Service endpoint (from docker):* http://127.0.0.1:80
 
+
+**TEST STRATEGY**
+These tests below I'd like to add in real-life scenario:
+- functional tests
+- performance/scalability tests
+- security tests
+
+
 **POTENTIAL PROBLEMS AND IMPROVEMENTS**
 - hostnames and ip addresses are not normalized and are considered as independent entities;
 It can be improved by converting the hostnames into ip addresses just after 'nmap' tool call and before
 saving the scan result into storage
+- 
 - support of new type of storage (document-oriented database) can be added and database service can be
 launched from docker-compose together with web-service
-
-CONFIG:
-- nmap: /usr/local/bin/nmap
-- logging
-- history: storage_connection: file://~/crowdstrike/history
-- clean
-
-STORAGE:
-key:  hostname / ip
-value:
- - scan_id
- - timestamp
- - result_code
- - scan_result
-
-
-TODO (further development):
-- authentication oauth
-- new storage type support
-- testing
+- storage clean-up process should be added in order to remote outdated scan results
