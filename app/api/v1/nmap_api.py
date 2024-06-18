@@ -25,7 +25,7 @@ async def get_scan(host=Annotated[str, Path(title='hostname to scan')],
     return result
 
 @app.get('/diff/{host}')
-async def get_diff(host=Annotated[str, Path(title='hostname to scan')]) -> ScanSession:
+async def get_diff(host=Annotated[str, Path(title='hostname to scan')]) -> list[dict]:
     scan_ids = ctrl.get_success_scan_results_meta(host)
     if not scan_ids:
         raise HTTPException(status_code=404, detail='Scan result is not found')

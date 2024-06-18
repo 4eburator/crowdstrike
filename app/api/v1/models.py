@@ -28,5 +28,4 @@ class ScanSession(UUIDModel):
 
     @field_serializer('trigger_ts')
     def ts_to_str(self, ts: datetime, _info) -> str:
-        # return ts.strftime('%d/%m/%Y, %H:%M:%S')
         return str(ts)

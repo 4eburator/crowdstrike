@@ -40,7 +40,7 @@ class TinyDBStorage(Storage):
     def find_result(self, host: str, scan_id: str) -> ScanSession:
         query = Query()
         results = self._open_db(host).search(query.uuid == scan_id)
-        return None if len(results) != 1 else ScanSession(**results[0])
+        return None if len(results) == 0 else ScanSession(**results[-1])
 
     def get_all_scan_ids(self, host: str, result_status: ResultCode) -> list[UUIDModel]:
         rows = self._open_db(host).all()

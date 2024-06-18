@@ -1,6 +1,5 @@
 import json
 import subprocess
-import time
 import xmltodict
 from fastapi import BackgroundTasks
 
@@ -38,10 +37,12 @@ class ControlManager:
         while True:
             output = process.stdout.readline()
             full_output = full_output + output.decode('utf-8')
+            # print(f'###> {full_output}')
             if process.poll() is not None:
                 break
 
         rc = process.poll()
+        # print(f'DONE> {rc}')
         return full_output
 
     def get_scan_result(self, host: str, scan_id: str) -> ScanSession:
@@ -50,13 +51,14 @@ class ControlManager:
     def get_success_scan_results_meta(self, host: str) -> list[UUIDModel]:
         return self.storage.get_all_scan_ids(host, ResultCode.success)
 
-    def get_diff_result(self, host: str, latest_uuid: UUIDModel, prev_uuid: UUIDModel):
-        # latest_result = self.get_scan_result(host, str(latest_uuid.uuid))
-        # latest_ports = self._extract_ports_info(json.loads(latest_result.result.nmap_output))
-        # prev_result = self.get_scan_result(host, str(prev_uuid.uuid))
+    def get_diff_result(self, host: str, latest_uuid: UUIDModel, prev_uuid: UUIDModel) -> list[dict]:
         latest_ports = self._extract_ports_info(host, latest_uuid)
         prev_ports = self._extract_ports_info(host, prev_uuid)
-        return None
+        diff_ports = list()
+        for port in latest_ports:
+            if port not in prev_ports:
+                diff_ports.append(port)
+        return diff_ports
 
     def _extract_ports_info(self, host: str, uuid: UUIDModel):
         scan_result = self.get_scan_result(host, str(uuid.uuid))
