@@ -2,55 +2,58 @@
 
 https://github.com/4eburator/crowdstrike
 
-The test assignments is implemented in python 3.9+ as web service by means of the following frameworks
-and dependencies:
+The test assignment is implemented in Python 3.9+ as a web service using the following frameworks and dependencies:
 - FastAPI framework
-- uvicorn application server
-- TinyDB json database
+- Uvicorn application server
+- TinyDB JSON database
 
-and can be run locally and from Docker container.
+The service can be run both locally and from a Docker container.
+
 
 **API**
 
-REST API consists of the following methods:
+The REST API consists of the following methods:
 
 * `POST /scan/<HOST>`
-This asynchronous call generates a unique `SCAN_ID`, launchers a background scan of the target host by means of 'nmap' 
-tool, and immediately returns `SCAN_ID` (see `ScanSession` model). The background task captures 'nmap' output in XML, 
-processes it (coverts to json) and stores in document-based Database TinyDB (json file stored locally per target host).
+
+  This asynchronous call generates a unique SCAN_ID, initiates a background scan of the target host using the `nmap` 
+  tool, and immediately returns the `SCAN_ID` (refer to the `ScanSession` model). The background task captures the `nmap` 
+  output in XML format, converts it to JSON, and stores it in the TinyDB document-based database (with the JSON file 
+  stored locally for each target host).
 
 
 * `GET /scan/<HOST>/<SCAN_ID>`
-The call extracts the scan result of the target host with the requested `SCAN_ID` from the storage and returns it. 
+  This call retrieves the scan result for the target host with the specified `SCAN_ID` from the storage and returns it. 
 
 
 * `GET /diff/<HOST>`
-The call retrieves two latest successful scan results of the target host from the storage (if they are available),
-compares the port states and returns the difference (if any).
+  This call fetches the two latest successful scan results for the target host from the storage (if available), 
+  compares the port states, and returns any differences found.
 
 
 **CONFIGURATION**
 
 - Default application settings are defined in `app/config/crowdstrike_config.py` as `pydantic_settings` and can be 
-overridden (see example in `Dockerfile`). 
-- `nmap_cli` defines the location and command-line parameters of `nmap` tool
-- `storage_connect` defines a connection string for a storage (TinyDB - refers to a local path of json files)
-- service port is specified in `main.py` (when started locally)
-- internal port is explicitly set in `Dockerfile` 
+overridden (see example in the `Dockerfile`). 
+- `nmap_cli` specifies the location and command-line parameters for the `nmap` tool
+- `storage_connect` provides the connection string for the storage (TinyDB, referring to a local path for JSON files)
+- The service port is specified in `main.py` when the application is started locally
+- The internal port is explicitly set in the Dockerfile
 
 
 **STORAGE**
 
-In order to keep implementation easy to implement but open to extend/replace, document-oriented TinyDB
-(https://tinydb.readthedocs.io/en/latest/index.html) was chosen (document versions are stored in json files locally).
-TinyDB is not thread-safe and obviously cannot be easily replicated and used in distributed setup but still can be 
-replaced with any other document-oriented database like MongoDB or Couchbase.
+To maintain simplicity while allowing for future extensibility or replacement, the document-oriented 
+TinyDB (https://tinydb.readthedocs.io/en/latest/index.html) was chosen. Document versions are stored 
+in local JSON files. While TinyDB is not thread-safe and does not easily support replication or 
+distributed setups, it can be replaced with other document-oriented databases like MongoDB or Couchbase 
+if needed.
 
 
 **PREREQUISITES**
 
-- pyenv is installed; see https://github.com/pyenv/pyenv#readme;
-- nmap is installed
+- install `pyenv`: Refer to the installation guide at https://github.com/pyenv/pyenv#readme
+- Ensure `nmap` is installed
 
 
 **Local environment setup commands (MacOS)**
@@ -62,6 +65,7 @@ replaced with any other document-oriented database like MongoDB or Couchbase.
 - `pyenv local $ENV_NAME`
 - `pip install --upgrade pip`
 - `pip install -r requirements.txt`
+
 
 **Start Web-app:**
 
@@ -78,10 +82,12 @@ replaced with any other document-oriented database like MongoDB or Couchbase.
 
 **Start in Docker:**
 
-The following Web-Service default settings are defined in app/api/config/crowdstrike_config.py:
+The default settings for the web service are defined in `app/api/config/crowdstrike_config.py`:
 - nmap_cli
 - storage_connect
-However they can be overridden in Dockerfile via environment variable (see example) 
+
+- These settings can be overridden in the `Dockerfile` via environment variables (see example).
+
 
 The commands to build a Docker image and launch a container 
 - `docker build -t crowdstrike_service .`
@@ -92,48 +98,50 @@ The commands to build a Docker image and launch a container
 
 **TEST STRATEGY**
 
-These tests below I'd like to add in real-life scenario:
+In a real-life scenario, I would include the following tests:
 
-- configuration tests check if:
-  - storage is being initialized correctly (i.e. local folders are successfully created if necessary or open if 
-  they exist)
-  - respective error message is printed out if configuration (path) is wrong
-  - the service is launched on the specified port
-  - API documentation is accessible 
-
-
-- functional tests
-  - trigger a known host scan and check if an appropriate record is added into a correct json
-  file with a unique UUID 
-  - trigger a sequence of identical host scans in parallel and check if all of them are processed
-  correctly and consistently
-  - retrieve a scan result for the known host and compare it with a model expected
-  - trigger a wrong host scan and check if scan result status is "FAIL"
-  - carry out a sequence of multiple target host scans and request difference between the latest ones
-  - trigger a host scan; open/close a port on the host; trigger a host scan again and retrieve the difference
-  - check if the service is able to handle 'nmap' output properly in case of wrong cli parameters or output format 
-    (not XML) 
+- Configuration Tests to check if:
+  - Storage is initialized correctly (e.g., local folders are created if necessary or opened if they exist)
+  - An appropriate error message is displayed if the configuration path is incorrect
+  - The service is launched on the specified port
+  - API documentation is accessible
 
 
-- performance/scalability tests
-  - check if the service response is immediate and does not depend on background tasks
-  - measure the latency dependency when the request rate is constantly increasing 
-  - in multi-container environment - check storage health
-  - in case of dynamic load - test how auto-balancing distributes the load between service endpoints
+- Functional Tests to:
+  - Trigger a known host scan and verify that an appropriate record is added to the correct JSON file with a unique UUID 
+  - Trigger a sequence of identical host scans in parallel and ensure all are processed correctly and consistently
+  - Retrieve a scan result for the known host and compare it with the expected model
+  - Trigger a scan for an incorrect host and verify that the scan result status is "FAIL"
+  - Conduct multiple target host scans and request the difference between the latest ones
+  - Trigger a host scan, open/close a port on the host, trigger another scan, and retrieve the difference
+  - Ensure the service can handle 'nmap' output properly, even with incorrect CLI parameters or non-XML output formats 
 
 
-- load / durability / endurance testing
-  - check if the service is able to consistently handle the requests for a significantly long time
-  
-- security tests
-  - authentication check - only authorized users / service accounts are able to use the method(s)
+- Performance/Scalability Tests to:
+  - Check if the service response is immediate and independent of background ta
+  - Measure latency dependency as the request rate increases 
+  - In a multi-container environment, verify the health of the storage
+  - Test how auto-balancing distributes the load between service endpoints under dynamic load
+
+
+- Load/Durability/Endurance Testing to:
+  - Verify the service can consistently handle requests over a prolonged period
+
+- Security Tests to:
+  - Ensure that only authorized users or service accounts can use the methods
+
 
 
 **POTENTIAL PROBLEMS AND IMPROVEMENTS**
-- hostnames and ip addresses are not normalized and are considered as independent entities;
-It can be improved by converting the hostnames into ip addresses just after 'nmap' tool call and before
-saving the scan result into storage
+- Hostnames and IP addresses are not normalized and are treated as independent entities. This can 
+be improved by converting hostnames into IP addresses immediately after the 'nmap' tool call and  
+before saving the scan result into storage;
 
-- support of new type of storage (document-oriented database) can be added and database service can be
-launched from docker-compose together with web-service
-- storage clean-up process should be added in order to remote outdated scan results
+- Support for a new type of storage (document-oriented database) can be added, and the database 
+service can be launched from Docker Compose alongside the web service;
+
+- A storage cleanup process should be implemented to remove outdated scan results
+
+
+Vitalii Sigov
+vsigov@yahoo.com
