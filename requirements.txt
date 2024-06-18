@@ -1,0 +1,6 @@
+pydantic==2.7.4
+pydantic-settings
+fastapi
+uvicorn[standard]
+tinydb
+xmltodict
