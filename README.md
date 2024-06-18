@@ -7,7 +7,7 @@ The test assignment is implemented in Python 3.9+ as a web service using the fol
 - Uvicorn application server
 - TinyDB JSON database
 
-The service can be run both locally and from a Docker container.
+The service can be run both locally and from a Docker container (if `nmap` is installed manually).
 
 
 **API**
@@ -94,7 +94,7 @@ The commands to build a Docker image and launch a container
 - `docker run -d --name crowdstrike -p 80:5000 crowdstrike_service`
 
 *Service endpoint (from docker):* http://127.0.0.1:80
-
+(`nmap` must be installed manually or via Docker compose)
 
 **TEST STRATEGY**
 
